@@ -56,7 +56,10 @@ client.on("message_create", async (message) => {
     }
 
     if (!agent) {
-      console.error("Agente não encontrado para o número:", message.from);
+      console.error(
+        "Agente não encontrado para o número:",
+        message.from.match(/^(\d+)@/)?.[1]
+      );
       return;
     }
 
@@ -64,7 +67,7 @@ client.on("message_create", async (message) => {
     agent.messages.push({
       from: message.from,
       to: message.to,
-      type: message.type, // Aqui definimos como texto. Você pode adaptar para outros tipos.
+      type: message.type == "chat" ? "text" : message.type, // Aqui definimos como texto. Você pode adaptar para outros tipos.
       content: messageContent,
       status: message.status || "sent",
     });
@@ -106,7 +109,7 @@ client.on("message", async (message) => {
     agent.messages.push({
       from: message.from,
       to: message.to,
-      type: message.type, // Aqui definimos como texto. Você pode adaptar para outros tipos.
+      type: message.type == "chat" ? "text" : message.type, // Aqui definimos como texto. Você pode adaptar para outros tipos.
       content: messageContent,
       status: message.status || "sent",
     });
