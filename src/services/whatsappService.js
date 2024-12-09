@@ -10,14 +10,8 @@ const saveUser = async () => {
     const user = await client.info;
     // const existingUser = await Agent.findOne({ phoneNumber: user.id.user });
 
-    console.log(user);
-
-    if (!user) {
-      console.log(`Usuário ${user.id.user} leu o qrcode`);
-      console.log("Usuário salvo no banco de dados:", newUser);
-    } else {
-      console.log("Usuário já existe no banco de dados.");
-    }
+    // console.log("Database User", existingUser);
+    console.log("Client User", user);
   });
 
   client.initialize();

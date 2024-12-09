@@ -35,6 +35,8 @@ saveUser();
 const regex = /^(\d+)@/;
 
 client.on("message_create", async (message) => {
+  console.log(message);
+
   try {
     // Encontrar o agente pelo número de telefone
     const agent = await Agent.findOne({
