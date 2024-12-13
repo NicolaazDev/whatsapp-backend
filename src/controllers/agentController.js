@@ -23,7 +23,7 @@ const createAgent = async (req, res) => {
       password,
       urlConnection,
       qrCode: "qrCode",
-      phoneNumber,
+      phoneNumbers: [phoneNumber],
       email,
     });
     await newAgent.save();
@@ -33,6 +33,36 @@ const createAgent = async (req, res) => {
     res
       .status(500)
       .json({ message: "Erro ao registrar Agent!", error: error.message });
+  }
+};
+
+const addPhoneNumber = async (req, res) => {
+  try {
+    const { agentId, phoneNumber } = req.body;
+
+    // Verifica se o agente existe
+    const agent = await Agent.findById(agentId);
+    if (!agent) {
+      return res.status(404).json({ message: "Agente não encontrado!" });
+    }
+
+    // Verifica se o número já existe no array
+    if (agent.phoneNumbers.includes(phoneNumber)) {
+      return res.status(400).json({ message: "Número já adicionado!" });
+    }
+
+    // Adiciona o número ao array
+    agent.phoneNumbers.push(phoneNumber);
+
+    // Salva as alterações
+    await agent.save();
+
+    res.status(200).json({ message: "Número adicionado com sucesso!", agent });
+  } catch (error) {
+    res.status(500).json({
+      message: "Erro ao adicionar número!",
+      error: error.message,
+    });
   }
 };
 
@@ -103,6 +133,25 @@ const getAgentById = async (req, res) => {
   }
 };
 
+const getAgentID = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    // Busca o agente no banco de dados
+    const agent = await Agent.findById(id);
+    // Verifica se o agente foi encontrado
+    if (!agent) {
+      return res.status(404).json({ message: "Agente não encontrado." });
+    }
+
+    // Retorna o agente encontrado
+    res.status(200).json({ agent });
+  } catch (error) {
+    console.error("Erro ao buscar agente:", error.message);
+    res.status(500).json({ message: "Erro interno do servidor." });
+  }
+};
+
 const getAgentBackup = async (req, res) => {
   try {
     const { id } = req.params;
@@ -116,8 +165,11 @@ const getAgentBackup = async (req, res) => {
 
     // Define o diretório temporário para o backup
     const tempDir = path.join(__dirname, "../temp");
-    const agentDir = path.join(tempDir, `agent_${agent.phoneNumber}`);
-    const zipPath = path.join(tempDir, `backup_agent_${agent.phoneNumber}.zip`);
+    const agentDir = path.join(tempDir, `agent_${agent.phoneNumbers[0]}`);
+    const zipPath = path.join(
+      tempDir,
+      `backup_agent_${agent.phoneNumbers[0]}.zip`
+    );
 
     await fs.ensureDir(agentDir); // Garante que a pasta do agente exista
 
@@ -183,7 +235,7 @@ const getAgentBackup = async (req, res) => {
       // Envia o arquivo ZIP para o cliente
       res.download(
         zipPath,
-        `backup_agent_${agent.phoneNumber}.zip`,
+        `backup_agent_${agent.phoneNumbers[0]}.zip`,
         async (err) => {
           if (err) {
             console.error("Erro ao enviar o arquivo ZIP:", err);
@@ -252,7 +304,7 @@ const getMultipleAgentBackups = async (req, res) => {
           .json({ message: `Agente com ID ${id} não encontrado.` });
       }
 
-      const agentDir = path.join(tempDir, `agent_${agent.phoneNumber}`);
+      const agentDir = path.join(tempDir, `agent_${agent.phoneNumbers[0]}`);
       await fs.ensureDir(agentDir);
 
       console.log(`Criando PDF para agente ${agent.username}...`);
@@ -343,6 +395,29 @@ const getMultipleAgentBackups = async (req, res) => {
   }
 };
 
+const toggleAgentDesativated = async (req, res) => {
+  try {
+    const { agentId } = req.params;
+
+    const agent = await agent.findById(agentId);
+
+    if (!agent) {
+      return res.status(404).json({ message: "agent não encontrado!" });
+    }
+
+    agent.desativated = !agent.desativated;
+    await agent.save();
+
+    res
+      .status(200)
+      .json({ message: "agent status atualizado com sucesso!", agent });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro ao atualizar status do agent!", error });
+  }
+};
+
 module.exports = {
   createAgent,
   loginAgent,
@@ -350,4 +425,7 @@ module.exports = {
   getAgentById,
   getAgentBackup,
   getMultipleAgentBackups,
+  toggleAgentDesativated,
+  addPhoneNumber,
+  getAgentID,
 };

@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 
-// Esquema da Mensagem
-const MessageSchema = new mongoose.Schema({
+const messageSchema = new mongoose.Schema({
   from: {
     type: String,
     required: true,
@@ -12,16 +11,8 @@ const MessageSchema = new mongoose.Schema({
   },
   type: {
     type: String,
-    enum: [
-      "text",
-      "image",
-      "audio",
-      "video",
-      "document",
-      "location",
-      "contact",
-    ],
     required: true,
+    enum: ["text", "image", "audio", "video", "document"],
   },
   content: {
     type: String,
@@ -29,7 +20,6 @@ const MessageSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["sent", "received", "read"],
     default: "sent",
   },
   timestamp: {
@@ -37,4 +27,5 @@ const MessageSchema = new mongoose.Schema({
     default: Date.now,
   },
 });
-module.exports = mongoose.model("Message", MessageSchema);
+
+module.exports = mongoose.model("Message", messageSchema);

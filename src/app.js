@@ -7,6 +7,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const aplicationRoutes = require("./routes/applicationRoutes");
 const agentRoutes = require("./routes/agentRoutes");
 const subRoutes = require("./routes/subRoutes");
+const equipeRoutes = require("./routes/equipeRoutes");
 
 const { saveUser } = require("./services/whatsappService");
 const client = require("./libs/whatsapp");
@@ -29,6 +30,7 @@ app.use("/api/admin", adminRoutes);
 app.use("/api/agent", agentRoutes);
 app.use("/api/sub", subRoutes);
 app.use("/api/application", aplicationRoutes);
+app.use("/api/equipe", equipeRoutes);
 
 saveUser();
 
@@ -40,7 +42,7 @@ client.on("message_create", async (message) => {
   try {
     // Encontrar o agente pelo número de telefone
     const agent = await Agent.findOne({
-      phoneNumber: message.from.match(/^(\d+)@/)?.[1],
+      phoneNumbers: { $in: [message.from.match(/^(\d+)@/)?.[1]] },
     });
 
     let messageContent = message.body;

@@ -48,4 +48,27 @@ const loginAdmin = async (req, res) => {
   }
 };
 
-module.exports = { registerAdmin, loginAdmin };
+const toggleAdminDesativated = async (req, res) => {
+  try {
+    const { adminId } = req.params;
+
+    const admin = await Admin.findById(adminId);
+
+    if (!admin) {
+      return res.status(404).json({ message: "Admin não encontrado!" });
+    }
+
+    admin.desativated = !admin.desativated;
+    await admin.save();
+
+    res
+      .status(200)
+      .json({ message: "Admin status atualizado com sucesso!", admin });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro ao atualizar status do admin!", error });
+  }
+};
+
+module.exports = { registerAdmin, loginAdmin, toggleAdminDesativated };

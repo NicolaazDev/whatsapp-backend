@@ -43,13 +43,10 @@ const generateQRCode = async (req, res) => {
   client.once("qr", async (qr) => {
     try {
       console.log("Recebendo QR Code...");
-
-      // Usa a lib qrcode para converter para base64
       const qrCodeBase64 = await qrcode.toDataURL(qr);
 
       console.log("QR Code gerado com sucesso!");
 
-      // Retorna a base64 na resposta
       res.json({ message: "QR Code gerado com sucesso!", qrCodeBase64 });
     } catch (error) {
       console.error("Erro ao gerar o QR Code:", error);

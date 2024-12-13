@@ -8,6 +8,7 @@ const AgentSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
+  desativated: { type: Boolean, default: false, required: false },
   password: {
     type: String,
     required: true,
@@ -26,7 +27,7 @@ const AgentSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  phoneNumber: { type: String },
+  phoneNumbers: { type: [String] },
   name: { type: String },
   pushName: { type: String },
   connectedAt: { type: Date, default: Date.now },

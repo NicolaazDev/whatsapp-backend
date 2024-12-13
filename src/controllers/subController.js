@@ -1,6 +1,5 @@
 const Sub = require("../models/Sub");
 
-// Registrar um novo Sub
 const registerSub = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -22,7 +21,6 @@ const registerSub = async (req, res) => {
   }
 };
 
-// Login do Sub
 const loginSub = async (req, res) => {
   try {
     const { username, password } = req.body;
@@ -46,4 +44,27 @@ const loginSub = async (req, res) => {
   }
 };
 
-module.exports = { registerSub, loginSub };
+const toggleSubDesativated = async (req, res) => {
+  try {
+    const { subId } = req.params;
+
+    const sub = await sub.findById(subId);
+
+    if (!sub) {
+      return res.status(404).json({ message: "sub não encontrado!" });
+    }
+
+    sub.desativated = !sub.desativated;
+    await sub.save();
+
+    res
+      .status(200)
+      .json({ message: "sub status atualizado com sucesso!", sub });
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Erro ao atualizar status do sub!", error });
+  }
+};
+
+module.exports = { registerSub, loginSub, toggleSubDesativated };

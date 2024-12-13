@@ -8,6 +8,7 @@ const adminSchema = new mongoose.Schema({
     unique: true,
     trim: true,
   },
+  desativated: { type: Boolean, default: false, required: false },
   password: {
     type: String,
     required: true,
