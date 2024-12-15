@@ -7,12 +7,12 @@ require("dotenv").config();
 
 const getLimitByPlan = (plan) => {
   switch (plan) {
-    case "free":
+    case "basic":
       return 5;
     case "pro":
       return 10;
     case "enterprise":
-      return 10;
+      return 20;
     default:
       return 5;
   }
@@ -44,6 +44,7 @@ const createApplication = async (req, res) => {
       username,
       password,
       plan,
+      token,
       document,
       enterprise,
       phoneNumber,
@@ -57,6 +58,13 @@ const createApplication = async (req, res) => {
       agents = [],
       subs = [],
     } = req.body;
+
+    if (
+      token !==
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjhkMTFiOTUyLTY5ZGItNGM0Ni05MDAwLWVlODc5N2Q4MDBhYyIsImlhdCI6MTczNDIyNDI5MiwiZXhwIjoxNzM0MjI3ODkyfQ.nhr3B78F8T-ew1UTdb8sPyXSxx90KJbTsZFb4boyfww"
+    ) {
+      return res.status(401).json({ message: "Token inválido." });
+    }
 
     let updatedExpiresIn = new Date(expires_in);
 
